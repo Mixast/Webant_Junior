@@ -1,0 +1,42 @@
+PODS:
+  - Alamofire (4.9.0)
+  - Kanna (5.0.0)
+  - KeychainSwift (17.0.0)
+  - Realm (3.19.0):
+    - Realm/Headers (= 3.19.0)
+  - Realm/Headers (3.19.0)
+  - RealmSwift (3.19.0):
+    - Realm (= 3.19.0)
+  - RNCryptor (5.1.0)
+  - SwiftyJSON (5.0.0)
+
+DEPENDENCIES:
+  - Alamofire
+  - Kanna
+  - KeychainSwift
+  - RealmSwift (~> 3.18)
+  - RNCryptor
+  - SwiftyJSON
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - Alamofire
+    - Kanna
+    - KeychainSwift
+    - Realm
+    - RealmSwift
+    - RNCryptor
+    - SwiftyJSON
+
+SPEC CHECKSUMS:
+  Alamofire: afc3e7c6db61476cb45cdd23fed06bad03bbc321
+  Kanna: a32875df62975f8f4b871e933b4ea1a5c3b8be0f
+  KeychainSwift: 9f43f562dffc88af6efadb57d74b14c598eb337f
+  Realm: 995d585bcf699aaff226715886c849a29dd3d07f
+  RealmSwift: 35f284a537989f2187b413e5917091948cb87a3f
+  RNCryptor: a369134686cd2ad391323cc856b62e591193ba79
+  SwiftyJSON: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
+
+PODFILE CHECKSUM: 3b17d3b574d000c0d2de6311ba2e58bbd8e32365
+
+COCOAPODS: 1.7.0.beta.1
