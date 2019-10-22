@@ -36,77 +36,75 @@ class PokemonProfile: Any {         // Структура профиля дру�
     var favoriteCards = [Cards]()
 
     func fillingUrlImage(page: Int, pageSize: Int  , completioHandler : (() ->Void)?) {
-        
-        let url = "https://api.pokemontcg.io/v1/cards?page=\(String( page))&pageSize=\(String(pageSize))"
-
-        request(url,  method: .get).validate(contentType: ["application/json"]).responseJSON() { response in
+        DispatchQueue.global().async {
+            let url = "https://api.pokemontcg.io/v1/cards?page=\(String( page))&pageSize=\(String(pageSize))"
             
-            switch response.result {
-            case .success(let value):
-                let json = JSON(value)
-                print(json)
-//                self.colectionCards.removeAll()
-                for (_, subJson):(String, JSON) in json["cards"] {
-
-                    let id = subJson["id"].stringValue
-                    var name = subJson["name"].stringValue
-                    let previewImageUrl = subJson["imageUrl"].stringValue
-                    let fullImageUrl = subJson["imageUrlHiRes"].stringValue
-                    var rarity = subJson["rarity"].stringValue
-                    var subtype = subJson["subtype"].stringValue
-                    var health = subJson["hp"].stringValue
-                    if name == "" {
-                        name = "No name"
-                    }
-                    if rarity == "" {
-                        rarity = "No rarity"
-                    }
-                    if subtype == "" {
-                        subtype = "No subtype"
-                    }
-                    if health == "" {
-                        health = "No health"
-                    }
-
-                    var type = [String]()
+            request(url,  method: .get).validate(contentType: ["application/json"]).responseJSON() { response in
+                
+                switch response.result {
+                case .success(let value):
+                    let json = JSON(value)
                     
-                    for (_, subJson):(String, JSON) in subJson["types"] {
-                        type.append(subJson.stringValue)
+                    for (_, subJson):(String, JSON) in json["cards"] {
+                        
+                        let id = subJson["id"].stringValue
+                        var name = subJson["name"].stringValue
+                        let previewImageUrl = subJson["imageUrl"].stringValue
+                        let fullImageUrl = subJson["imageUrlHiRes"].stringValue
+                        var rarity = subJson["rarity"].stringValue
+                        var subtype = subJson["subtype"].stringValue
+                        var health = subJson["hp"].stringValue
+                        if name == "" {
+                            name = "No name"
+                        }
+                        if rarity == "" {
+                            rarity = "No rarity"
+                        }
+                        if subtype == "" {
+                            subtype = "No subtype"
+                        }
+                        if health == "" {
+                            health = "No health"
+                        }
+                        
+                        var type = [String]()
+                        
+                        for (_, subJson):(String, JSON) in subJson["types"] {
+                            type.append(subJson.stringValue)
+                        }
+                        
+                        var attackTypes = [String]()
+                        for (_, subJson):(String, JSON) in subJson["attacks"] {
+                            attackTypes.append(subJson["name"].stringValue)
+                        }
+                        
+                        if type.count == 0 {
+                            type.append("No type")
+                        }
+                        if attackTypes.count == 0 {
+                            attackTypes.append("No attackTypes")
+                        }
+                        
+                        var card = Cards()
+                        card.id = id
+                        card.name = name
+                        card.previewImageUrl = previewImageUrl
+                        card.fullImageUrl = fullImageUrl
+                        card.rarity = rarity
+                        card.subtype = subtype
+                        card.health = health
+                        card.type = type
+                        card.attackTypes = attackTypes
+                        self.colectionCards.append(card)
                     }
-                    
-                    var attackTypes = [String]()
-                    for (_, subJson):(String, JSON) in subJson["attacks"] {
-                        attackTypes.append(subJson["name"].stringValue)
-                    }
-                    
-                    if type.count == 0 {
-                        type.append("No type")
-                    }
-                    if attackTypes.count == 0 {
-                        attackTypes.append("No attackTypes")
-                    }
-                    
-                    var card = Cards()
-                    card.id = id
-                    card.name = name
-                    card.previewImageUrl = previewImageUrl
-                    card.fullImageUrl = fullImageUrl
-                    card.rarity = rarity
-                    card.subtype = subtype
-                    card.health = health
-                    card.type = type
-                    card.attackTypes = attackTypes
-                    self.colectionCards.append(card)
+                    completioHandler?()
+                case .failure(let error):
+                    let arres = error.localizedDescription
+                    print(arres)
+                    completioHandler?()
                 }
-                completioHandler?()
-            case .failure(let error):
-                let arres = error.localizedDescription
-                print(arres)
-                completioHandler?()
             }
-            
         }
-        
     }
     
     
@@ -178,7 +176,6 @@ func searchPoky(name: String, completioHandler : (() ->Void)?) {
         case .success(let value):
             let json = JSON(value)
             
-            print(json)
             for (_, subJson):(String, JSON) in json["cards"] {
 
                 let id = subJson["id"].stringValue

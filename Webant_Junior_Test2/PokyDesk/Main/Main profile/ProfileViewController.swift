@@ -14,7 +14,6 @@ class ProfileViewController: UIViewController {
         
         let view = ProfileView()
         view.transportLine = transportLine
-        print(searching)
         view.searching = searching
         
         view.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height - 40)

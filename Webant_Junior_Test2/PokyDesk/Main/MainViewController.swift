@@ -30,14 +30,13 @@ class MainViewController: UIViewController {
         sizeHeightCell = collectionView.frame.size.height / 2.2
         self.collectionView.register(UINib.init(nibName: customCollectionViewCell, bundle: nil), forCellWithReuseIdentifier: customCollectionViewCell)
         
-        
-        self.collectionCard.colectionCards.removeAll()
-        collectionCard.fillingUrlImage(page: page, pageSize: pageSize) {
-            DispatchQueue.main.async {
-                if self.collectionCard.colectionCards.count > 0 {
-                    realmSave()
-  
-                    self.collectionView.reloadData()
+        if self.collectionCard.colectionCards.count == 0 {
+            collectionCard.fillingUrlImage(page: page, pageSize: pageSize) {
+                DispatchQueue.main.async {
+                    if self.collectionCard.colectionCards.count > 0 {
+                        realmSave()
+                        self.collectionView.reloadData()
+                    }
                 }
             }
         }
@@ -174,8 +173,135 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         guard let index = tapGestureRecognizer.imageNumber else {
             return
         }
+        //     MARK: - searching
         
-        if searching { } else {
+        if searching {
+            
+            if self.collectionCard.favoriteCards.count > 0 {
+                for i in 1...self.collectionCard.favoriteCards.count {
+                    if self.collectionCard.favoriteCards[i-1].id == filteredTableViewData[index].id {
+                        return
+                    }
+                }
+                self.collectionCard.favoriteCards.append(filteredTableViewData[index])
+                
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .broadcast, object: nil)
+                }
+                
+                
+                DispatchQueue.global().async {
+                    
+                    guard let realm = self.realm else {
+                        return
+                    }
+                    
+                    let object = realm.objects(RealmBase.self)
+                    if object.count > 0 {
+                        guard let base = Optional(object[transportRealmIndex]) else {
+                            return
+                        }
+                        
+                        for i in 1...base.favoriteCards.count {
+                            if base.favoriteCards[i-1].id == filteredTableViewData[index].id {
+                                return
+                            }
+                        }
+                        
+                        let card = CardsRealm()
+                        card.id = filteredTableViewData[index].id
+                        card.name = filteredTableViewData[index].name
+                        card.previewImageUrl = filteredTableViewData[index].previewImageUrl
+                        card.fullImageUrl = filteredTableViewData[index].fullImageUrl
+                        card.previewImageData = filteredTableViewData[index].previewImageData
+                        card.fullImageData = filteredTableViewData[index].fullImageData
+                        card.rarity = filteredTableViewData[index].rarity
+                        card.subtype = filteredTableViewData[index].subtype
+                        card.health = filteredTableViewData[index].health
+                        
+                        if filteredTableViewData[index].type.count != 0 {
+                            let list = List<String>()
+                            for k in 1...filteredTableViewData[index].type.count {
+                                list.append(filteredTableViewData[index].type[k-1])
+                            }
+                            card.type = list
+                        }
+                        
+                        if filteredTableViewData[index].attackTypes.count != 0 {
+                            let list = List<String>()
+                            for k in 1...filteredTableViewData[index].attackTypes.count {
+                                list.append(filteredTableViewData[index].attackTypes[k-1])
+                            }
+                            card.attackTypes = list
+                        }
+                        DispatchQueue.main.async {
+                            try! realm.write {
+                                base.favoriteCards.append(card)
+                            }
+                        }
+                    }
+                    
+                }
+
+            } else {
+                self.collectionCard.favoriteCards.append(filteredTableViewData[index])
+                
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .broadcast, object: nil)
+                }
+                
+                DispatchQueue.global().async {
+                    
+                    guard let realm = self.realm else {
+                        return
+                    }
+                    
+                    let object = realm.objects(RealmBase.self)
+                    if object.count > 0 {
+                        guard let base = Optional(object[transportRealmIndex]) else {
+                            return
+                        }
+                        
+                        let card = CardsRealm()
+                        card.id = filteredTableViewData[index].id
+                        card.name = filteredTableViewData[index].name
+                        card.previewImageUrl = filteredTableViewData[index].previewImageUrl
+                        card.fullImageUrl = filteredTableViewData[index].fullImageUrl
+                        card.previewImageData = filteredTableViewData[index].previewImageData
+                        card.fullImageData = filteredTableViewData[index].fullImageData
+                        card.rarity = filteredTableViewData[index].rarity
+                        card.subtype = filteredTableViewData[index].subtype
+                        card.health = filteredTableViewData[index].health
+                        
+                        if filteredTableViewData[index].type.count != 0 {
+                            let list = List<String>()
+                            for k in 1...filteredTableViewData[index].type.count {
+                                list.append(filteredTableViewData[index].type[k-1])
+                            }
+                            card.type = list
+                        }
+                        
+                        if filteredTableViewData[index].attackTypes.count != 0 {
+                            let list = List<String>()
+                            for k in 1...filteredTableViewData[index].attackTypes.count {
+                                list.append(filteredTableViewData[index].attackTypes[k-1])
+                            }
+                            card.attackTypes = list
+                        }
+                        DispatchQueue.main.async {
+                            
+                            try! realm.write {
+                                base.favoriteCards.append(card)
+                            }
+                        }
+                    }
+                }
+                
+            }
+            
+         //     MARK: - No searching
+            
+        } else {
             if self.collectionCard.favoriteCards.count > 0 {
                 for i in 1...self.collectionCard.favoriteCards.count {
                     if self.collectionCard.favoriteCards[i-1].id == self.collectionCard.colectionCards[index].id {
@@ -188,18 +314,21 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
                     NotificationCenter.default.post(name: .broadcast, object: nil)
                 }
                 
-                guard let realm = self.realm else {
-                    return
-                }
-                
-                let object = realm.objects(RealmBase.self)
-                if object.count > 0 {
-                    guard let base = Optional(object[transportRealmIndex]) else {
+                DispatchQueue.main.async {
+
+                    guard let realm = self.realm else {
                         return
                     }
                     
-                    try! realm.write {
-                        base.favoriteCards.append(base.colectionCards[index])
+                    let object = realm.objects(RealmBase.self)
+                    if object.count > 0 {
+                        guard let base = Optional(object[transportRealmIndex]) else {
+                            return
+                        }
+                        
+                        try! realm.write {
+                            base.favoriteCards.append(base.colectionCards[index])
+                        }
                     }
                 }
                 
@@ -209,23 +338,26 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
                 DispatchQueue.main.async {
                     NotificationCenter.default.post(name: .broadcast, object: nil)
                 }
-                
-                guard let realm = self.realm else {
-                    return
-                }
-                
-                let object = realm.objects(RealmBase.self)
-                if object.count > 0 {
-                    guard let base = Optional(object[transportRealmIndex]) else {
+                DispatchQueue.main.async {
+                    
+                    guard let realm = self.realm else {
                         return
                     }
                     
-                    try! realm.write {
-                        base.favoriteCards.append(base.colectionCards[index])
+                    let object = realm.objects(RealmBase.self)
+                    if object.count > 0 {
+                        guard let base = Optional(object[transportRealmIndex]) else {
+                            return
+                        }
+                        
+                        try! realm.write {
+                            base.favoriteCards.append(base.colectionCards[index])
+                        }
                     }
                 }
-                
+            
             }
+            
         }
     }
     
@@ -247,7 +379,7 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
 extension MainViewController {
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if searching { } else {
+        if searching == false{
             if collectionCard.colectionCards.count-1 == indexPath.row && collectionCard.colectionCards.count%10 == 0{
                 getMoreImages(page: page)
             }
@@ -256,18 +388,62 @@ extension MainViewController {
 
     func getMoreImages(page: Int) {
         if api_success {
+            
             self.page = self.page + 1
             api_success = false
+            let savePosition = self.collectionCard.colectionCards.count
             collectionCard.fillingUrlImage(page: page, pageSize: pageSize) {
                 DispatchQueue.main.async {
-                    if self.collectionCard.colectionCards.count > 0 {
-                        DispatchQueue.global().async {
-                            realmSave()
+                    if self.collectionCard.colectionCards.count > savePosition {
+                        
+                        for i in savePosition...self.collectionCard.colectionCards.count {
+                            let card = CardsRealm()
+                            card.id = self.collectionCard.colectionCards[i-1].id
+                            card.name = self.collectionCard.colectionCards[i-1].name
+                            card.previewImageUrl = self.collectionCard.colectionCards[i-1].previewImageUrl
+                            card.fullImageUrl = self.collectionCard.colectionCards[i-1].fullImageUrl
+                            card.previewImageData = self.collectionCard.colectionCards[i-1].previewImageData
+                            card.fullImageData = self.collectionCard.colectionCards[i-1].fullImageData
+                            card.rarity = self.collectionCard.colectionCards[i-1].rarity
+                            card.subtype = self.collectionCard.colectionCards[i-1].subtype
+                            card.health = self.collectionCard.colectionCards[i-1].health
+                            
+                            if self.collectionCard.colectionCards[i-1].type.count != 0 {
+                                let list = List<String>()
+                                for k in 1...self.collectionCard.colectionCards[i-1].type.count {
+                                    list.append(self.collectionCard.colectionCards[i-1].type[k-1])
+                                }
+                                card.type = list
+                            }
+                            
+                            if self.collectionCard.colectionCards[i-1].attackTypes.count != 0 {
+                                let list = List<String>()
+                                for k in 1...self.collectionCard.colectionCards[i-1].attackTypes.count {
+                                    list.append(self.collectionCard.colectionCards[i-1].attackTypes[k-1])
+                                }
+                                card.attackTypes = list
+                            }
+                            
+                            guard let realm = self.realm else {
+                                return
+                            }
+                            
+                            let object = realm.objects(RealmBase.self)
+                            if object.count > 0 {
+                                guard let base = Optional(object[transportRealmIndex]) else {
+                                    return
+                                }
+                                
+                                try! realm.write {
+                                    base.colectionCards.append(card)
+                                }
+                            }
                         }
+                        
                         self.api_success = true
                         self.collectionView.reloadData()
                     } else {
-                        
+                        print("Dont donwload")
                     }
                 }
             }

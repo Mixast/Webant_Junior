@@ -41,105 +41,109 @@ class CardsRealm: Object { // Структура Аnime
 
 // Сохраниение данных в реалм
 func realmSave() {
-    let pokemonProfile = PokemonProfile.instance
-    let testEntyty = RealmBase()
-    testEntyty.id = 1
-    testEntyty.name = "Test"
-    testEntyty.birthday = "20.20.2020"
-    testEntyty.avatar = "Test"
-    
-    if pokemonProfile.colectionCards.count > 0 {
-        for i in 1...pokemonProfile.colectionCards.count {
-            let card = CardsRealm()
-            card.id = pokemonProfile.colectionCards[i-1].id
-            card.name = pokemonProfile.colectionCards[i-1].name
-            card.previewImageUrl = pokemonProfile.colectionCards[i-1].previewImageUrl
-            card.fullImageUrl = pokemonProfile.colectionCards[i-1].fullImageUrl
-            card.previewImageData = pokemonProfile.colectionCards[i-1].previewImageData
-            card.fullImageData = pokemonProfile.colectionCards[i-1].fullImageData
-            card.rarity = pokemonProfile.colectionCards[i-1].rarity
-            card.subtype = pokemonProfile.colectionCards[i-1].subtype
-            card.health = pokemonProfile.colectionCards[i-1].health
-            
-            if pokemonProfile.colectionCards[i-1].type.count != 0 {
-                let list = List<String>()
-                for k in 1...pokemonProfile.colectionCards[i-1].type.count {
-                    list.append(pokemonProfile.colectionCards[i-1].type[k-1])
-                }
-                card.type = list
-            }
-            
-            if pokemonProfile.colectionCards[i-1].attackTypes.count != 0 {
-                let list = List<String>()
-                for k in 1...pokemonProfile.colectionCards[i-1].attackTypes.count {
-                    list.append(pokemonProfile.colectionCards[i-1].attackTypes[k-1])
-                }
-                card.attackTypes = list
-            }
-            testEntyty.colectionCards.append(card)
-        }
-    }
-    
-    if pokemonProfile.favoriteCards.count > 0 {
-        for i in 1...pokemonProfile.favoriteCards.count {
-            let card = CardsRealm()
-            card.id = pokemonProfile.favoriteCards[i-1].id
-            card.name = pokemonProfile.favoriteCards[i-1].name
-            card.previewImageUrl = pokemonProfile.favoriteCards[i-1].previewImageUrl
-            card.fullImageUrl = pokemonProfile.favoriteCards[i-1].fullImageUrl
-            card.previewImageData = pokemonProfile.favoriteCards[i-1].previewImageData
-            card.fullImageData = pokemonProfile.favoriteCards[i-1].fullImageData
-            card.rarity = pokemonProfile.favoriteCards[i-1].rarity
-            card.subtype = pokemonProfile.favoriteCards[i-1].subtype
-            card.health = pokemonProfile.favoriteCards[i-1].health
-            
-            if pokemonProfile.favoriteCards[i-1].type.count != 0 {
-                let list = List<String>()
-                for k in 1...pokemonProfile.favoriteCards[i-1].type.count {
-                    list.append(pokemonProfile.favoriteCards[i-1].type[k-1])
-                }
-                card.type = list
-            }
-            
-            if pokemonProfile.favoriteCards[i-1].attackTypes.count != 0 {
-                let list = List<String>()
-                for k in 1...pokemonProfile.favoriteCards[i-1].attackTypes.count {
-                    list.append(pokemonProfile.favoriteCards[i-1].attackTypes[k-1])
-                }
-                card.attackTypes = list
-            }
-            testEntyty.favoriteCards.append(card)
-        }
-    }
-    
-    DispatchQueue.main.async {
+    DispatchQueue.global().async {
         
-        guard let realm =  try? Realm() else {
-            print("Error Realm")
-            return
+        let pokemonProfile = PokemonProfile.instance
+        let testEntyty = RealmBase()
+        testEntyty.id = 1
+        testEntyty.name = "Test"
+        testEntyty.birthday = "20.20.2020"
+        testEntyty.avatar = "Test"
+        
+        if pokemonProfile.colectionCards.count > 0 {
+            for i in 1...pokemonProfile.colectionCards.count {
+                let card = CardsRealm()
+                card.id = pokemonProfile.colectionCards[i-1].id
+                card.name = pokemonProfile.colectionCards[i-1].name
+                card.previewImageUrl = pokemonProfile.colectionCards[i-1].previewImageUrl
+                card.fullImageUrl = pokemonProfile.colectionCards[i-1].fullImageUrl
+                card.previewImageData = pokemonProfile.colectionCards[i-1].previewImageData
+                card.fullImageData = pokemonProfile.colectionCards[i-1].fullImageData
+                card.rarity = pokemonProfile.colectionCards[i-1].rarity
+                card.subtype = pokemonProfile.colectionCards[i-1].subtype
+                card.health = pokemonProfile.colectionCards[i-1].health
+                
+                if pokemonProfile.colectionCards[i-1].type.count != 0 {
+                    let list = List<String>()
+                    for k in 1...pokemonProfile.colectionCards[i-1].type.count {
+                        list.append(pokemonProfile.colectionCards[i-1].type[k-1])
+                    }
+                    card.type = list
+                }
+                
+                if pokemonProfile.colectionCards[i-1].attackTypes.count != 0 {
+                    let list = List<String>()
+                    for k in 1...pokemonProfile.colectionCards[i-1].attackTypes.count {
+                        list.append(pokemonProfile.colectionCards[i-1].attackTypes[k-1])
+                    }
+                    card.attackTypes = list
+                }
+                testEntyty.colectionCards.append(card)
+            }
         }
         
-        let object = realm.objects(RealmBase.self)
-        if object.count > 0 {
-            guard let base = Optional(object[transportRealmIndex]) else {
+        if pokemonProfile.favoriteCards.count > 0 {
+            for i in 1...pokemonProfile.favoriteCards.count {
+                let card = CardsRealm()
+                card.id = pokemonProfile.favoriteCards[i-1].id
+                card.name = pokemonProfile.favoriteCards[i-1].name
+                card.previewImageUrl = pokemonProfile.favoriteCards[i-1].previewImageUrl
+                card.fullImageUrl = pokemonProfile.favoriteCards[i-1].fullImageUrl
+                card.previewImageData = pokemonProfile.favoriteCards[i-1].previewImageData
+                card.fullImageData = pokemonProfile.favoriteCards[i-1].fullImageData
+                card.rarity = pokemonProfile.favoriteCards[i-1].rarity
+                card.subtype = pokemonProfile.favoriteCards[i-1].subtype
+                card.health = pokemonProfile.favoriteCards[i-1].health
+                
+                if pokemonProfile.favoriteCards[i-1].type.count != 0 {
+                    let list = List<String>()
+                    for k in 1...pokemonProfile.favoriteCards[i-1].type.count {
+                        list.append(pokemonProfile.favoriteCards[i-1].type[k-1])
+                    }
+                    card.type = list
+                }
+                
+                if pokemonProfile.favoriteCards[i-1].attackTypes.count != 0 {
+                    let list = List<String>()
+                    for k in 1...pokemonProfile.favoriteCards[i-1].attackTypes.count {
+                        list.append(pokemonProfile.favoriteCards[i-1].attackTypes[k-1])
+                    }
+                    card.attackTypes = list
+                }
+                testEntyty.favoriteCards.append(card)
+            }
+        }
+        
+        
+        DispatchQueue.main.async {
+            
+            guard let realm =  try? Realm() else {
+                print("Error Realm")
                 return
             }
             
-            try! realm.write {
-                realm.delete(base)
-                print("delete base")
+            let object = realm.objects(RealmBase.self)
+            if object.count > 0 {
+                guard let base = Optional(object[transportRealmIndex]) else {
+                    return
+                }
+                
+                try! realm.write {
+                    realm.delete(base)
+                    print("delete base")
+                }
             }
-        }
-        
-        do {
-            let realm = try Realm()
-            print(realm.configuration.fileURL as Any)
-            realm.beginWrite()
-            realm.add(testEntyty)
-            try realm.commitWrite()
             
-        } catch {
-            print(error)
+            do {
+                let realm = try Realm()
+                print(realm.configuration.fileURL as Any)
+                realm.beginWrite()
+                realm.add(testEntyty)
+                try realm.commitWrite()
+                
+            } catch {
+                print(error)
+            }
         }
     }
 }
